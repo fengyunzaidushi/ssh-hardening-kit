@@ -52,9 +52,31 @@ fi
 
 restart_service fail2ban
 
+wait_for_fail2ban() {
+  local attempt
+
+  for attempt in $(seq 1 10); do
+    if fail2ban-client ping >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 1
+  done
+
+  return 1
+}
+
 log "fail2ban sshd jail applied"
 log "Backup directory: $BACKUP_DIR"
 echo
-fail2ban-client status || true
+
+if wait_for_fail2ban; then
+  fail2ban-client status || true
+else
+  warn "fail2ban socket was not ready after waiting"
+  if have_cmd systemctl; then
+    systemctl status fail2ban --no-pager || true
+  fi
+fi
+
 echo
 fail2ban-client status sshd || true
