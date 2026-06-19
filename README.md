@@ -155,7 +155,7 @@ sudo BACKUP_DIR=/root/ssh-hardening-backups/20260619-120000-sshd bash scripts/90
 ## 注意事项
 
 - 先确认云厂商安全组也放行了 `NEW_SSH_PORT`。
-- 默认允许 `root` 继续使用密码登录，只修改 SSH 端口及基础连接参数。
+- 默认允许 `root` 继续使用密码登录，只修改 SSH 端口及基础连接参数，并重启 SSH 监听服务让端口立即生效。
 - 所有脚本都有默认值，不需要 `.env.example`；需要覆盖时直接在命令前加环境变量。
 - 如果你以后设置 `DISABLE_PASSWORD=yes`，脚本会先检查 `/root/.ssh/authorized_keys` 是否存在且非空。
 - UFW 和 Docker 同机使用时，Docker 端口暴露可能绕过 UFW，需要另做 Docker 网络规则。

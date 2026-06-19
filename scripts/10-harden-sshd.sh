@@ -149,7 +149,7 @@ if ! test_sshd_config; then
   die "New sshd config failed validation and was rolled back"
 fi
 
-reload_sshd
+restart_sshd
 
 log "SSH config applied"
 log "Backup directory: $BACKUP_DIR"

@@ -114,6 +114,28 @@ reload_sshd() {
   die "Could not reload ssh/sshd service"
 }
 
+restart_sshd() {
+  if have_cmd systemctl; then
+    if systemctl restart ssh >/dev/null 2>&1; then
+      return
+    fi
+    if systemctl restart sshd >/dev/null 2>&1; then
+      return
+    fi
+  fi
+
+  if have_cmd service; then
+    if service ssh restart >/dev/null 2>&1; then
+      return
+    fi
+    if service sshd restart >/dev/null 2>&1; then
+      return
+    fi
+  fi
+
+  die "Could not restart ssh/sshd service"
+}
+
 restart_service() {
   local service_name="$1"
 

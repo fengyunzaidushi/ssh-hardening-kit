@@ -33,11 +33,10 @@ elif [[ -f "$CONFIG_FILE" ]]; then
 fi
 
 test_sshd_config
-reload_sshd
+restart_sshd
 
 log "SSH config rolled back and sshd reloaded"
 echo
 "$(sshd_bin)" -T | awk '
   /^(port|passwordauthentication|kbdinteractiveauthentication|challengeresponseauthentication|permitrootlogin|pubkeyauthentication|maxauthtries|allowusers) / {print}
 '
-
