@@ -26,6 +26,12 @@ curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/mai
 curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- add-key
 ```
 
+显式开启 SSH 公钥登录：
+
+```bash
+curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- enable-pubkey
+```
+
 安装并配置 fail2ban：
 
 ```bash
@@ -52,16 +58,22 @@ curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/mai
 sudo bash scripts/00-preflight.sh
 ```
 
-修改 SSH 端口，默认保留 root 密码登录：
-
-```bash
-sudo bash scripts/10-harden-sshd.sh
-```
-
 添加默认 SSH 公钥到 `root`：
 
 ```bash
 sudo bash scripts/05-add-ssh-key.sh
+```
+
+显式开启 SSH 公钥登录：
+
+```bash
+sudo bash scripts/06-enable-pubkey-login.sh
+```
+
+修改 SSH 端口，默认保留 root 密码登录：
+
+```bash
+sudo bash scripts/10-harden-sshd.sh
 ```
 
 然后不要关闭当前 SSH 窗口，新开一个终端测试新端口：
@@ -113,6 +125,16 @@ sudo CLOSE_PORT_22=yes bash scripts/30-configure-ufw.sh
 | --- | --- | --- |
 | `SSH_KEY_USER` | `root` | 要添加公钥的用户 |
 | `SSH_PUBLIC_KEY` | `ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH535gEQjjfN8kGVCo4743cvNL5nih2gX+JgWts9Dqeo fengx@fxy-win11` | 要添加的 ed25519 公钥 |
+
+`scripts/06-enable-pubkey-login.sh`
+
+| 变量 | 默认值 | 说明 |
+| --- | --- | --- |
+| `SSH_KEY_USER` | `root` | 用于检查 `authorized_keys` 并打印该用户的有效 SSH 配置 |
+| `PERMIT_ROOT_LOGIN` | `yes` | 当 `SSH_KEY_USER=root` 时写入 `PermitRootLogin` |
+| `AUTHORIZED_KEYS_FILE` | `.ssh/authorized_keys .ssh/authorized_keys2` | 写入 `AuthorizedKeysFile` |
+| `CONFIG_FILE` | `/etc/ssh/sshd_config.d/00-enable-pubkey-login.conf` | 写入的 SSH 配置片段 |
+| `FIX_KEY_PERMISSIONS` | `yes` | 是否修复目标用户 `.ssh` 与 `authorized_keys` 权限 |
 
 `scripts/20-install-fail2ban.sh`
 

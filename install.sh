@@ -13,15 +13,18 @@ Usage:
 Actions:
   preflight   Show system, SSH, UFW, fail2ban status
   add-key     Add the default ssh-ed25519 public key to root authorized_keys
+  enable-pubkey
+              Enable SSH public key login in sshd_config
   sshd        Change SSH port to 55889 by default; keep root password login enabled
   fail2ban    Install/configure fail2ban for SSH port 55889 by default
   ufw         Configure UFW for SSH port 55889, HTTP, HTTPS
   rollback    Roll back the latest SSH config backup
-  all         Run preflight, sshd, fail2ban, ufw
+  all         Run preflight, add-key, enable-pubkey, sshd, fail2ban, ufw
 
 Examples:
   curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | bash -s -- preflight
   curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- add-key
+  curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- enable-pubkey
   curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- sshd
   curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- fail2ban
   curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- ufw
@@ -76,7 +79,7 @@ case "$ACTION" in
     usage
     exit 0
     ;;
-  preflight | add-key | sshd | fail2ban | ufw | rollback | all)
+  preflight | add-key | enable-pubkey | sshd | fail2ban | ufw | rollback | all)
     ;;
   *)
     usage
@@ -102,6 +105,9 @@ case "$ACTION" in
   add-key)
     run_script scripts/05-add-ssh-key.sh
     ;;
+  enable-pubkey)
+    run_script scripts/06-enable-pubkey-login.sh
+    ;;
   sshd)
     run_script scripts/10-harden-sshd.sh
     ;;
@@ -117,6 +123,7 @@ case "$ACTION" in
   all)
     run_script scripts/00-preflight.sh
     run_script scripts/05-add-ssh-key.sh
+    run_script scripts/06-enable-pubkey-login.sh
     run_script scripts/10-harden-sshd.sh
     run_script scripts/20-install-fail2ban.sh
     run_script scripts/30-configure-ufw.sh
