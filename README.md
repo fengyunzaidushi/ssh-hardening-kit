@@ -9,37 +9,37 @@
 预检：
 
 ```bash
-bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh) preflight
+curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | bash -s -- preflight
 ```
 
 修改 SSH 端口为默认 `55889`，保留 root 密码登录：
 
 ```bash
-sudo bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh) sshd
+curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- sshd
 ```
 
 添加默认 SSH 公钥到 `root`：
 
 ```bash
-sudo bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh) add-key
+curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- add-key
 ```
 
 安装并配置 fail2ban：
 
 ```bash
-sudo bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh) fail2ban
+curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- fail2ban
 ```
 
 配置 UFW：
 
 ```bash
-sudo bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh) ufw
+curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- ufw
 ```
 
 关闭 22 端口：
 
 ```bash
-sudo CLOSE_PORT_22=yes bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh) ufw
+curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo env CLOSE_PORT_22=yes bash -s -- ufw
 ```
 
 ## 执行顺序

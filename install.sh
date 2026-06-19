@@ -8,7 +8,7 @@ ACTION="${1:-sshd}"
 usage() {
   cat <<'EOF'
 Usage:
-  bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh) [action]
+  curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | bash -s -- [action]
 
 Actions:
   preflight   Show system, SSH, UFW, fail2ban status
@@ -20,12 +20,12 @@ Actions:
   all         Run preflight, sshd, fail2ban, ufw
 
 Examples:
-  bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh) preflight
-  sudo bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh) add-key
-  sudo bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh) sshd
-  sudo bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh) fail2ban
-  sudo bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh) ufw
-  sudo CLOSE_PORT_22=yes bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh) ufw
+  curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | bash -s -- preflight
+  curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- add-key
+  curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- sshd
+  curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- fail2ban
+  curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- ufw
+  curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo env CLOSE_PORT_22=yes bash -s -- ufw
 EOF
 }
 
