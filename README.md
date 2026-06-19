@@ -4,6 +4,38 @@
 
 默认目标系统是 Ubuntu/Debian；`fail2ban` 安装脚本也尽量兼容 `dnf`/`yum` 系统。所有会改系统配置的脚本都需要 `root` 权限。
 
+## 一行命令
+
+预检：
+
+```bash
+bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh) preflight
+```
+
+修改 SSH 端口为默认 `55889`，保留 root 密码登录：
+
+```bash
+sudo bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh) sshd
+```
+
+安装并配置 fail2ban：
+
+```bash
+sudo bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh) fail2ban
+```
+
+配置 UFW：
+
+```bash
+sudo bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh) ufw
+```
+
+关闭 22 端口：
+
+```bash
+sudo CLOSE_PORT_22=yes bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh) ufw
+```
+
 ## 执行顺序
 
 先预检：
