@@ -165,3 +165,17 @@ echo "Effective SSH settings:"
 "$(sshd_bin)" -T | awk '
   /^(port|passwordauthentication|kbdinteractiveauthentication|challengeresponseauthentication|permitrootlogin|pubkeyauthentication|maxauthtries|allowusers) / {print}
 '
+
+if have_cmd ss; then
+  echo
+  echo "Listening SSH ports:"
+  ss -tlnp 2>/dev/null | awk 'NR == 1 || /sshd|systemd/'
+
+  if ! ss -tln 2>/dev/null | awk '{print $4}' | grep -Eq "[:.]$NEW_SSH_PORT$"; then
+    warn "SSH does not appear to be listening on $NEW_SSH_PORT yet"
+  fi
+
+  if ss -tln 2>/dev/null | awk '{print $4}' | grep -Eq '[:.]22$'; then
+    warn "Port 22 is still listening. Check systemd ssh.socket/sshd.socket and cloud images."
+  fi
+fi

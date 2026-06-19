@@ -44,6 +44,14 @@ else
 fi
 
 echo
+echo "== SSH systemd sockets =="
+if have_cmd systemctl; then
+  systemctl status ssh.socket sshd.socket --no-pager 2>/dev/null | sed -n '1,80p' || true
+else
+  echo "systemctl not found"
+fi
+
+echo
 echo "== UFW =="
 if have_cmd ufw; then
   ufw status verbose || true

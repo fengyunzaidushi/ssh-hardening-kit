@@ -116,6 +116,11 @@ reload_sshd() {
 
 restart_sshd() {
   if have_cmd systemctl; then
+    disable_ssh_socket_if_active
+
+    systemctl enable ssh >/dev/null 2>&1 || true
+    systemctl enable sshd >/dev/null 2>&1 || true
+
     if systemctl restart ssh >/dev/null 2>&1; then
       return
     fi
@@ -134,6 +139,26 @@ restart_sshd() {
   fi
 
   die "Could not restart ssh/sshd service"
+}
+
+disable_ssh_socket_if_active() {
+  local socket_name
+
+  if ! have_cmd systemctl; then
+    return
+  fi
+
+  for socket_name in ssh.socket sshd.socket; do
+    if systemctl list-unit-files "$socket_name" --no-legend 2>/dev/null | awk '{print $1}' | grep -qx "$socket_name"; then
+      if systemctl is-active --quiet "$socket_name" || systemctl is-enabled --quiet "$socket_name" 2>/dev/null; then
+        log "Disabling $socket_name so sshd_config Port takes effect"
+        systemctl stop "$socket_name" >/dev/null 2>&1 || true
+        systemctl disable "$socket_name" >/dev/null 2>&1 || true
+      fi
+    fi
+  done
+
+  systemctl daemon-reload >/dev/null 2>&1 || true
 }
 
 restart_service() {
