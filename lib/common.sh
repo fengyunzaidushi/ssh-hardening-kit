@@ -39,8 +39,16 @@ backup_root() {
 
 new_backup_dir() {
   local suffix="$1"
-  local dir
-  dir="$(backup_root)/$(date +%Y%m%d-%H%M%S)-${suffix}"
+  local base dir index
+  base="$(backup_root)/$(date +%Y%m%d-%H%M%S)-${suffix}"
+  dir="$base"
+  index=1
+
+  while [[ -e "$dir" ]]; do
+    dir="${base}-${index}"
+    index=$((index + 1))
+  done
+
   mkdir -p "$dir"
   printf '%s\n' "$dir"
 }
@@ -157,4 +165,3 @@ has_authorized_keys() {
 
   [[ -n "$home" && -s "$home/.ssh/authorized_keys" ]]
 }
-

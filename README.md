@@ -18,6 +18,12 @@ bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-
 sudo bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh) sshd
 ```
 
+添加默认 SSH 公钥到 `root`：
+
+```bash
+sudo bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh) add-key
+```
+
 安装并配置 fail2ban：
 
 ```bash
@@ -48,6 +54,12 @@ sudo bash scripts/00-preflight.sh
 
 ```bash
 sudo bash scripts/10-harden-sshd.sh
+```
+
+添加默认 SSH 公钥到 `root`：
+
+```bash
+sudo bash scripts/05-add-ssh-key.sh
 ```
 
 然后不要关闭当前 SSH 窗口，新开一个终端测试新端口：
@@ -92,6 +104,13 @@ sudo CLOSE_PORT_22=yes bash scripts/30-configure-ufw.sh
 | `PERMIT_ROOT_LOGIN` | `yes` | 是否允许 root 登录；默认允许 root 密码/密钥登录 |
 | `MAX_AUTH_TRIES` | `3` | 单连接最大认证尝试次数 |
 | `ALLOW_NO_KEY` | `no` | 仅当 `DISABLE_PASSWORD=yes` 时生效；没检测到 authorized_keys 是否仍继续 |
+
+`scripts/05-add-ssh-key.sh`
+
+| 变量 | 默认值 | 说明 |
+| --- | --- | --- |
+| `SSH_KEY_USER` | `root` | 要添加公钥的用户 |
+| `SSH_PUBLIC_KEY` | `ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH535gEQjjfN8kGVCo4743cvNL5nih2gX+JgWts9Dqeo fengx@fxy-win11` | 要添加的 ed25519 公钥 |
 
 `scripts/20-install-fail2ban.sh`
 

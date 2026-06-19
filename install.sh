@@ -12,6 +12,7 @@ Usage:
 
 Actions:
   preflight   Show system, SSH, UFW, fail2ban status
+  add-key     Add the default ssh-ed25519 public key to root authorized_keys
   sshd        Change SSH port to 55889 by default; keep root password login enabled
   fail2ban    Install/configure fail2ban for SSH port 55889 by default
   ufw         Configure UFW for SSH port 55889, HTTP, HTTPS
@@ -20,6 +21,7 @@ Actions:
 
 Examples:
   bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh) preflight
+  sudo bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh) add-key
   sudo bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh) sshd
   sudo bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh) fail2ban
   sudo bash <(curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh) ufw
@@ -74,7 +76,7 @@ case "$ACTION" in
     usage
     exit 0
     ;;
-  preflight | sshd | fail2ban | ufw | rollback | all)
+  preflight | add-key | sshd | fail2ban | ufw | rollback | all)
     ;;
   *)
     usage
@@ -97,6 +99,9 @@ case "$ACTION" in
   preflight)
     run_script scripts/00-preflight.sh
     ;;
+  add-key)
+    run_script scripts/05-add-ssh-key.sh
+    ;;
   sshd)
     run_script scripts/10-harden-sshd.sh
     ;;
@@ -111,9 +116,9 @@ case "$ACTION" in
     ;;
   all)
     run_script scripts/00-preflight.sh
+    run_script scripts/05-add-ssh-key.sh
     run_script scripts/10-harden-sshd.sh
     run_script scripts/20-install-fail2ban.sh
     run_script scripts/30-configure-ufw.sh
     ;;
 esac
-
