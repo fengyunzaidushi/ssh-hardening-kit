@@ -4,6 +4,8 @@
 
 默认目标系统是 Ubuntu/Debian；`fail2ban` 安装脚本也尽量兼容 `dnf`/`yum` 系统。所有会改系统配置的脚本都需要 `root` 权限。
 
+在 AlmaLinux/Rocky Linux/CentOS/RHEL 这类系统上，如果默认仓库没有 `fail2ban`，脚本会自动安装 `epel-release` 后重试。
+
 ## 一行命令
 
 预检：

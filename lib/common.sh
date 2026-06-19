@@ -188,11 +188,25 @@ install_packages() {
   fi
 
   if have_cmd dnf; then
+    if dnf install -y "$@"; then
+      return
+    fi
+
+    log "Package install failed; enabling EPEL and retrying"
+    dnf install -y epel-release
+    dnf makecache
     dnf install -y "$@"
     return
   fi
 
   if have_cmd yum; then
+    if yum install -y "$@"; then
+      return
+    fi
+
+    log "Package install failed; enabling EPEL and retrying"
+    yum install -y epel-release
+    yum makecache
     yum install -y "$@"
     return
   fi
