@@ -50,6 +50,19 @@ curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/mai
 curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo env CLOSE_PORT_22=yes bash -s -- ufw
 ```
 
+通过 npm 安装或更新 Codex CLI：
+
+```bash
+curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- codex
+```
+
+脚本会安装基础依赖。Node.js 低于推荐版本时，会从 Node.js 官方发布站下载最新 LTS 版本并校验 SHA-256，然后执行严格引擎检查的 `npm install -g @openai/codex@latest`。安装完成后，请切换到普通用户执行登录，不要使用 root 运行交互式 Codex：
+
+```bash
+codex login --device-auth
+codex login status
+```
+
 ## 执行顺序
 
 先预检：
@@ -156,6 +169,15 @@ sudo CLOSE_PORT_22=yes bash scripts/30-configure-ufw.sh
 | `ALLOW_HTTPS` | `yes` | 是否允许 443/tcp |
 | `CLOSE_PORT_22` | `no` | 是否删除常见 22/tcp allow 规则并 deny 22/tcp |
 
+`scripts/40-install-codex.sh`
+
+| 变量 | 默认值 | 说明 |
+| --- | --- | --- |
+| `CODEX_PACKAGE_SPEC` | `@openai/codex@latest` | 要安装的 npm 包及版本，可固定为具体版本 |
+| `MIN_NODE_MAJOR` | `22` | 推荐的最低 Node.js 主版本；低于它会安装最新 LTS |
+| `CODEX_RUN_USER` | `$SUDO_USER` | 安装后提示切换并登录 Codex 的普通用户 |
+| `NODE_DIST_BASE` | `https://nodejs.org/dist` | Node.js 官方发布文件地址 |
+
 ## 回滚 SSH 配置
 
 SSH 加固脚本会把备份放在：
@@ -182,5 +204,6 @@ sudo BACKUP_DIR=/root/ssh-hardening-backups/20260619-120000-sshd bash scripts/90
 - 默认允许 `root` 继续使用密码登录，只修改 SSH 端口及基础连接参数，并重启 SSH 监听服务让端口立即生效。
 - 如果系统启用了 `ssh.socket`/`sshd.socket`，脚本会停用它们，避免 systemd socket 继续固定监听 22。
 - 所有脚本都有默认值，不需要 `.env.example`；需要覆盖时直接在命令前加环境变量。
+- `codex` 动作不会随 `all` 自动执行，需要单独调用；安装可使用 root，但日常运行 Codex 应使用普通用户。
 - 如果你以后设置 `DISABLE_PASSWORD=yes`，脚本会先检查 `/root/.ssh/authorized_keys` 是否存在且非空。
 - UFW 和 Docker 同机使用时，Docker 端口暴露可能绕过 UFW，需要另做 Docker 网络规则。

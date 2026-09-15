@@ -18,6 +18,7 @@ Actions:
   sshd        Change SSH port to 55889 by default; keep root password login enabled
   fail2ban    Install/configure fail2ban for SSH port 55889 by default
   ufw         Configure UFW for SSH port 55889, HTTP, HTTPS
+  codex       Install/update Codex CLI globally through npm
   rollback    Roll back the latest SSH config backup
   all         Run preflight, add-key, enable-pubkey, sshd, fail2ban, ufw
 
@@ -29,6 +30,7 @@ Examples:
   curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- fail2ban
   curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- ufw
   curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo env CLOSE_PORT_22=yes bash -s -- ufw
+  curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- codex
 EOF
 }
 
@@ -79,7 +81,7 @@ case "$ACTION" in
     usage
     exit 0
     ;;
-  preflight | add-key | enable-pubkey | sshd | fail2ban | ufw | rollback | all)
+  preflight | add-key | enable-pubkey | sshd | fail2ban | ufw | codex | rollback | all)
     ;;
   *)
     usage
@@ -116,6 +118,9 @@ case "$ACTION" in
     ;;
   ufw)
     run_script scripts/30-configure-ufw.sh
+    ;;
+  codex)
+    run_script scripts/40-install-codex.sh
     ;;
   rollback)
     run_script scripts/90-rollback-sshd.sh
