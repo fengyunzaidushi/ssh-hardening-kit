@@ -8,6 +8,16 @@
 
 ## 一行命令
 
+一次执行预检、添加公钥、启用公钥登录、修改 SSH 端口为 `55889`、安装并配置 fail2ban，跳过 UFW：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- all-no-ufw
+```
+
+`all-no-ufw` 不会安装、启用或配置 UFW，也不会关闭已有防火墙。fail2ban 仍会执行封禁规则。执行前请在现有防火墙和云安全组放行 `55889/tcp`，保留当前 SSH 会话，并在执行后从新终端测试登录。某一步失败会停止后续步骤，已完成的修改不会自动全部回滚。
+
+原有 `all` 选项仍会在以上 5 项之后配置并启用 UFW。
+
 预检：
 
 ```bash

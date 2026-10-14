@@ -21,8 +21,10 @@ Actions:
   codex       Install/update Codex CLI globally through npm
   rollback    Roll back the latest SSH config backup
   all         Run preflight, add-key, enable-pubkey, sshd, fail2ban, ufw
+  all-no-ufw  Run preflight, add-key, enable-pubkey, sshd, fail2ban; skip UFW
 
 Examples:
+  curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- all-no-ufw
   curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | bash -s -- preflight
   curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- add-key
   curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- enable-pubkey
@@ -81,7 +83,7 @@ case "$ACTION" in
     usage
     exit 0
     ;;
-  preflight | add-key | enable-pubkey | sshd | fail2ban | ufw | codex | rollback | all)
+  preflight | add-key | enable-pubkey | sshd | fail2ban | ufw | codex | rollback | all | all-no-ufw)
     ;;
   *)
     usage
@@ -125,12 +127,14 @@ case "$ACTION" in
   rollback)
     run_script scripts/90-rollback-sshd.sh
     ;;
-  all)
+  all | all-no-ufw)
     run_script scripts/00-preflight.sh
     run_script scripts/05-add-ssh-key.sh
     run_script scripts/06-enable-pubkey-login.sh
     run_script scripts/10-harden-sshd.sh
     run_script scripts/20-install-fail2ban.sh
-    run_script scripts/30-configure-ufw.sh
+    if [[ "$ACTION" == all ]]; then
+      run_script scripts/30-configure-ufw.sh
+    fi
     ;;
 esac
