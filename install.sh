@@ -19,11 +19,13 @@ Actions:
   fail2ban    Install/configure fail2ban for SSH port 55889 by default
   ufw         Configure UFW for SSH port 55889, HTTP, HTTPS
   codex       Install/update Codex CLI globally through npm
+  cert        Download certificate/key to /root/cert-CF/sub2api.online
   rollback    Roll back the latest SSH config backup
   all         Run preflight, add-key, enable-pubkey, sshd, fail2ban, ufw
-  all-no-ufw  Run preflight, add-key, enable-pubkey, sshd, fail2ban; skip UFW
+  all-no-ufw  Run preflight, add-key, enable-pubkey, sshd, fail2ban, cert; skip UFW
 
 Examples:
+  curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- cert
   curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- all-no-ufw
   curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | bash -s -- preflight
   curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- add-key
@@ -83,7 +85,7 @@ case "$ACTION" in
     usage
     exit 0
     ;;
-  preflight | add-key | enable-pubkey | sshd | fail2ban | ufw | codex | rollback | all | all-no-ufw)
+  preflight | add-key | enable-pubkey | sshd | fail2ban | ufw | codex | cert | rollback | all | all-no-ufw)
     ;;
   *)
     usage
@@ -124,6 +126,9 @@ case "$ACTION" in
   codex)
     run_script scripts/40-install-codex.sh
     ;;
+  cert)
+    run_script scripts/50-install-cert.sh
+    ;;
   rollback)
     run_script scripts/90-rollback-sshd.sh
     ;;
@@ -135,6 +140,8 @@ case "$ACTION" in
     run_script scripts/20-install-fail2ban.sh
     if [[ "$ACTION" == all ]]; then
       run_script scripts/30-configure-ufw.sh
+    else
+      run_script scripts/50-install-cert.sh
     fi
     ;;
 esac

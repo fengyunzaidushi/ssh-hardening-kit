@@ -8,7 +8,7 @@
 
 ## 一行命令
 
-一次执行预检、添加公钥、启用公钥登录、修改 SSH 端口为 `55889`、安装并配置 fail2ban，跳过 UFW：
+一次执行预检、添加公钥、启用公钥登录、修改 SSH 端口为 `55889`、安装并配置 fail2ban，最后下载并安装证书，跳过 UFW：
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- all-no-ufw
@@ -16,7 +16,28 @@ curl -fsSL https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/m
 
 `all-no-ufw` 不会安装、启用或配置 UFW，也不会关闭已有防火墙。fail2ban 仍会执行封禁规则。执行前请在现有防火墙和云安全组放行 `55889/tcp`，保留当前 SSH 会话，并在执行后从新终端测试登录。某一步失败会停止后续步骤，已完成的修改不会自动全部回滚。
 
-原有 `all` 选项仍会在以上 5 项之后配置并启用 UFW。
+原有 `all` 选项会依次执行预检、添加公钥、启用公钥登录、修改 SSH 端口、配置 fail2ban、配置并启用 UFW，不包含证书安装。
+
+下载并安装 `sub2api.online` 的证书：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- cert
+```
+
+`cert` 会创建 `/root/cert-CF/sub2api.online`，从仓库的 `cert/fullchain.pem` 和 `cert/privkey.pem` 下载文件，校验证书格式及私钥匹配后安装为：
+
+```text
+/root/cert-CF/sub2api.online/fullchain.pem
+/root/cert-CF/sub2api.online/privkey.pem
+```
+
+目录权限为 `700`，证书为 `644`，私钥为 `600`，所有者为 `root:root`。下载或校验失败不会覆盖已有证书；替换前会备份到 `/root/ssh-hardening-backups/`。此操作可通过 `cert` 单独执行，也会作为 `all-no-ufw` 的最后一步执行，不随 `all` 执行，不会自动重启使用证书的服务。
+
+私钥不应放在公开仓库中。如果已公开，请重新签发证书并更换私钥。可通过 `CERT_BASE_URL` 指定包含这两个文件的私有 HTTPS 下载目录：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo env CERT_BASE_URL="https://YOUR_PRIVATE_HOST/cert" bash -s -- cert
+```
 
 预检：
 
