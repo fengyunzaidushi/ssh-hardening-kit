@@ -15,7 +15,20 @@ FAIL2BAN_BACKEND="${FAIL2BAN_BACKEND:-systemd}"
 FAIL2BAN_IGNORE_IPS="${FAIL2BAN_IGNORE_IPS:-}"
 JAIL_FILE="${JAIL_FILE:-/etc/fail2ban/jail.d/sshd-hardening-kit.local}"
 
-validate_port "$SSH_PORT" SSH_PORT
+if [[ "$SSH_PORT" == auto ]]; then
+  effective_config="$("$(sshd_bin)" -T)"
+  ssh_ports=()
+  while IFS= read -r port; do
+    [[ -n "$port" ]] || continue
+    validate_port "$port" SSH_PORT
+    ssh_ports+=("$port")
+  done <<<"$(printf '%s\n' "$effective_config" | awk '$1 == "port" {print $2}' | sort -nu)"
+  [[ "${#ssh_ports[@]}" -gt 0 ]] || die "Cannot detect SSH ports; set SSH_PORT explicitly"
+  SSH_PORT="$(IFS=,; printf '%s' "${ssh_ports[*]}")"
+  log "Detected SSH ports for fail2ban: $SSH_PORT"
+else
+  validate_port "$SSH_PORT" SSH_PORT
+fi
 
 if ! have_cmd fail2ban-client; then
   log "Installing fail2ban"

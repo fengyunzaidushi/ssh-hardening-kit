@@ -23,8 +23,11 @@ Actions:
   rollback    Roll back the latest SSH config backup
   all         Run preflight, add-key, enable-pubkey, sshd, fail2ban, ufw
   all-no-ufw  Run preflight, add-key, enable-pubkey, sshd, fail2ban, cert; skip UFW
+  all-no-sshd-no-ufw
+              Run preflight, add-key, enable-pubkey, fail2ban, cert; keep SSH port
 
 Examples:
+  curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- all-no-sshd-no-ufw
   curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- cert
   curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- all-no-ufw
   curl -Ls https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | bash -s -- preflight
@@ -85,7 +88,7 @@ case "$ACTION" in
     usage
     exit 0
     ;;
-  preflight | add-key | enable-pubkey | sshd | fail2ban | ufw | codex | cert | rollback | all | all-no-ufw)
+  preflight | add-key | enable-pubkey | sshd | fail2ban | ufw | codex | cert | rollback | all | all-no-ufw | all-no-sshd-no-ufw)
     ;;
   *)
     usage
@@ -131,6 +134,9 @@ case "$ACTION" in
     ;;
   rollback)
     run_script scripts/90-rollback-sshd.sh
+    ;;
+  all-no-sshd-no-ufw)
+    run_script scripts/60-setup-ssh-no-port-change.sh
     ;;
   all | all-no-ufw)
     run_script scripts/00-preflight.sh

@@ -8,6 +8,16 @@
 
 ## 一行命令
 
+保留现有 SSH 端口，依次执行预检、添加公钥、启用公钥登录、配置 fail2ban、下载并安装证书：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/main/install.sh | sudo bash -s -- all-no-sshd-no-ufw
+```
+
+该选项跳过 `sshd` 加固和 UFW 配置步骤。启用公钥登录仍会修改公钥认证配置并重启 SSH 服务，请保留当前会话并从新终端测试登录。fail2ban 默认通过 `sshd -T` 自动读取当前配置的 SSH 端口（支持多个端口），也可通过 `sudo env SSH_PORT=22 bash -s -- all-no-sshd-no-ufw` 显式指定端口。任一步骤失败会停止后续执行。
+
+仓库已下载到服务器时，也可直接运行 `sudo bash scripts/60-setup-ssh-no-port-change.sh`。
+
 一次执行预检、添加公钥、启用公钥登录、修改 SSH 端口为 `55889`、安装并配置 fail2ban，最后下载并安装证书，跳过 UFW：
 
 ```bash
@@ -31,7 +41,7 @@ curl -fsSL https://raw.githubusercontent.com/fengyunzaidushi/ssh-hardening-kit/m
 /root/cert-CF/sub2api.online/privkey.pem
 ```
 
-目录权限为 `700`，证书为 `644`，私钥为 `600`，所有者为 `root:root`。下载或校验失败不会覆盖已有证书；替换前会备份到 `/root/ssh-hardening-backups/`。此操作可通过 `cert` 单独执行，也会作为 `all-no-ufw` 的最后一步执行，不随 `all` 执行，不会自动重启使用证书的服务。
+目录权限为 `700`，证书为 `644`，私钥为 `600`，所有者为 `root:root`。下载或校验失败不会覆盖已有证书；替换前会备份到 `/root/ssh-hardening-backups/`。此操作可通过 `cert` 单独执行，也会作为 `all-no-ufw` 和 `all-no-sshd-no-ufw` 的最后一步执行，不随 `all` 执行，不会自动重启使用证书的服务。
 
 私钥不应放在公开仓库中。如果已公开，请重新签发证书并更换私钥。可通过 `CERT_BASE_URL` 指定包含这两个文件的私有 HTTPS 下载目录：
 
@@ -184,7 +194,7 @@ sudo CLOSE_PORT_22=yes bash scripts/30-configure-ufw.sh
 
 | 变量 | 默认值 | 说明 |
 | --- | --- | --- |
-| `SSH_PORT` | `55889` | fail2ban 保护的 SSH 端口 |
+| `SSH_PORT` | `55889` | fail2ban 保护的 SSH 端口；设为 `auto` 时从 `sshd -T` 读取，`all-no-sshd-no-ufw` 默认使用 `auto` |
 | `FAIL2BAN_MAXRETRY` | `5` | 失败次数阈值 |
 | `FAIL2BAN_FINDTIME` | `10m` | 统计窗口 |
 | `FAIL2BAN_BANTIME` | `1d` | 封禁时间 |
